@@ -3,6 +3,7 @@ import './App.css';
 import Login from './components/Login';
 import UnitSelection from './components/UnitSelection';
 import ChecklistForm from './components/ChecklistForm';
+import BottomNavigation from './components/BottomNavigation';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -47,6 +48,15 @@ function App() {
     setCurrentStep('unit-selection');
   };
 
+  const handleNavigate = (step) => {
+    if (step === 'login') {
+      handleLogout();
+    } else if (step === 'unit-selection') {
+      setSelectedUnit(null);
+      setCurrentStep('unit-selection');
+    }
+  };
+
   const renderCurrentStep = () => {
     switch (currentStep) {
       case 'login':
@@ -54,10 +64,15 @@ function App() {
       
       case 'unit-selection':
         return (
-          <div>
-            <div className="header">
-              <h1>Bienvenido, {user?.name}</h1>
-              <button onClick={handleLogout} className="logout-btn">Cerrar Sesión</button>
+          <div className="app-content">
+            <div className="mobile-header">
+              <div className="header-content">
+                <h1>¡Hola, {user?.name}! 👋</h1>
+                <p className="header-subtitle">Selecciona una unidad para comenzar</p>
+                <button onClick={handleLogout} className="logout-btn-mobile">
+                  Cerrar Sesión
+                </button>
+              </div>
             </div>
             <UnitSelection onUnitSelect={handleUnitSelect} />
           </div>
@@ -65,10 +80,18 @@ function App() {
       
       case 'checklist':
         return (
-          <div>
-            <div className="header">
-              <h1>Checklist - {selectedUnit?.code}</h1>
-              <button onClick={handleLogout} className="logout-btn">Cerrar Sesión</button>
+          <div className="app-content">
+            <div className="mobile-header">
+              <div className="header-content">
+                <h1>Checklist</h1>
+                <p className="header-subtitle">
+                  <span className="unit-code">{selectedUnit?.code}</span>
+                  <span className="unit-details">{selectedUnit?.name} • Piso {selectedUnit?.floor}</span>
+                </p>
+                <button onClick={handleLogout} className="logout-btn-mobile">
+                  Cerrar Sesión
+                </button>
+              </div>
             </div>
             <ChecklistForm 
               selectedUnit={selectedUnit} 
@@ -81,13 +104,28 @@ function App() {
         return (
           <div className="success-container">
             <div className="success-card">
+              <div className="success-icon">🎉</div>
               <h1>¡Checklist Completado!</h1>
-              <p>El checklist para {selectedUnit?.code} ha sido guardado exitosamente.</p>
+              <p>El checklist para <strong>{selectedUnit?.code}</strong> ha sido guardado exitosamente.</p>
+              <div className="success-details">
+                <div className="detail-item">
+                  <span className="detail-label">Unidad:</span>
+                  <span className="detail-value">{selectedUnit?.name}</span>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-label">Piso:</span>
+                  <span className="detail-value">{selectedUnit?.floor}</span>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-label">Completado por:</span>
+                  <span className="detail-value">{user?.name}</span>
+                </div>
+              </div>
               <div className="success-actions">
-                <button onClick={handleNewChecklist} className="primary-btn">
+                <button onClick={handleNewChecklist} className="btn btn-primary">
                   Nuevo Checklist
                 </button>
-                <button onClick={handleLogout} className="secondary-btn">
+                <button onClick={handleLogout} className="btn btn-secondary">
                   Cerrar Sesión
                 </button>
               </div>
@@ -102,7 +140,19 @@ function App() {
 
   return (
     <div className="App">
-      {renderCurrentStep()}
+      <main className="app-main">
+        {renderCurrentStep()}
+      </main>
+      
+      {/* Show bottom navigation on mobile for logged in users */}
+      {user && (
+        <BottomNavigation 
+          currentStep={currentStep}
+          onNavigate={handleNavigate}
+          user={user}
+          canGoBack={true}
+        />
+      )}
     </div>
   );
 }

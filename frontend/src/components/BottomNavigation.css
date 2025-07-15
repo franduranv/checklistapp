@@ -1,0 +1,258 @@
+.bottom-navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--background);
+  border-top: 1px solid var(--border-light);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-sticky);
+  padding: env(safe-area-inset-bottom, 0) 0 0 0;
+}
+
+.bottom-nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  max-width: 100%;
+  gap: var(--space-sm);
+}
+
+/* Back Button */
+.nav-back-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  padding: var(--space-xs);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  justify-content: center;
+}
+
+.nav-back-btn:hover {
+  background: var(--background-light);
+  transform: translateX(-2px);
+}
+
+.nav-back-btn:active {
+  transform: translateX(-4px) scale(0.95);
+}
+
+.nav-icon {
+  font-size: var(--font-size-lg);
+  margin-bottom: 2px;
+}
+
+.nav-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Progress Section */
+.nav-progress {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+
+.progress-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  width: 100%;
+  max-width: 280px;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  opacity: 0.4;
+  transition: all 0.3s ease;
+  flex: 1;
+  min-width: 0;
+}
+
+.progress-step.completed {
+  opacity: 0.7;
+}
+
+.progress-step.current {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--background-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.progress-step.completed .step-circle {
+  background: var(--primary-color);
+  color: white;
+}
+
+.progress-step.current .step-circle {
+  background: var(--primary-gradient);
+  color: white;
+  border-color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.step-icon {
+  font-size: var(--font-size-sm);
+}
+
+.step-label {
+  font-size: 10px;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-muted);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.progress-step.current .step-label {
+  color: var(--primary-color);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Progress Bar */
+.progress-bar {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  height: 2px;
+  background: var(--border-light);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  z-index: -1;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--primary-gradient);
+  transition: width 0.4s ease;
+  border-radius: var(--radius-full);
+}
+
+/* User Info */
+.nav-user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: var(--touch-target-min);
+  gap: 2px;
+}
+
+.user-name {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60px;
+}
+
+.user-step {
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 480px) {
+  .bottom-nav-container {
+    padding: var(--space-xs) var(--space-sm);
+  }
+  
+  .progress-steps {
+    gap: var(--space-xs);
+    max-width: 240px;
+  }
+  
+  .step-circle {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .step-label {
+    font-size: 9px;
+  }
+  
+  .nav-label {
+    font-size: 10px;
+  }
+  
+  .user-name {
+    max-width: 50px;
+  }
+}
+
+/* Landscape Mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .bottom-navigation {
+    padding: 0;
+  }
+  
+  .bottom-nav-container {
+    padding: var(--space-xs) var(--space-md);
+  }
+  
+  .step-label {
+    display: none;
+  }
+  
+  .nav-label {
+    display: none;
+  }
+  
+  .user-step {
+    display: none;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .bottom-navigation {
+    background: rgba(0, 0, 0, 0.9);
+    border-top-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .nav-back-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .step-circle {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .progress-bar {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
