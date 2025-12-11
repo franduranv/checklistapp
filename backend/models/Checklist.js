@@ -15,24 +15,17 @@ const checklistSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  items: {
-    bathroom: {
-      type: Boolean,
-      default: false
-    },
-    kitchen: {
-      type: Boolean,
-      default: false
-    },
-    whites: {
-      type: Boolean,
-      default: false
-    },
-    livingRoom: {
-      type: Boolean,
-      default: false
-    }
+  template: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Template',
+    required: true
   },
+  items: [{
+    areaName: String,
+    itemText: String,
+    value: mongoose.Schema.Types.Mixed, // Can be boolean, string, etc.
+    comment: String
+  }],
   photos: [{
     url: {
       type: String,

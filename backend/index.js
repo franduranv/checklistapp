@@ -17,10 +17,12 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 const authRoutes = require('./routes/auth');
 const unitRoutes = require('./routes/units');
 const checklistRoutes = require('./routes/checklists');
+const templateRoutes = require('./routes/templates');
 
 app.use('/api/auth', authRoutes.router);
 app.use('/api/units', unitRoutes);
 app.use('/api/checklists', checklistRoutes);
+app.use('/api/templates', templateRoutes);
 
 app.get('/', (req, res) => {
   res.send('Checklist App Backend');

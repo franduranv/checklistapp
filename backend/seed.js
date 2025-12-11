@@ -1,54 +1,79 @@
-require('dotenv').config();
 const mongoose = require('mongoose');
 const User = require('./models/User');
 const Unit = require('./models/Unit');
+const Template = require('./models/Template');
+require('dotenv').config();
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/checklist-app';
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/checklist-app', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 
-const users = [
-  { name: 'Operador1', pin: '1234', role: 'operator' },
-  { name: 'Operador2', pin: '5678', role: 'operator' },
-  { name: 'Admin', pin: '9999', role: 'admin' }
-];
-
-const units = [
-  // Renta a corto plazo
-  { code: 'BaW ALM809P-D101', name: 'D101', category: 'short-term', floor: 1 },
-  { code: 'BaW ALM809P-D102', name: 'D102', category: 'short-term', floor: 1 },
-  { code: 'BaW ALM809P-D103', name: 'D103', category: 'short-term', floor: 1 },
-  { code: 'BaW ALM809P-D104', name: 'D104', category: 'short-term', floor: 1 },
-  { code: 'BaW ALM809P-D201', name: 'D201', category: 'short-term', floor: 2 },
-  { code: 'BaW ALM809P-D202', name: 'D202', category: 'short-term', floor: 2 },
-  { code: 'BaW ALM809P-D304', name: 'D304', category: 'short-term', floor: 3 },
-  { code: 'BaW ALM809P-D403', name: 'D403', category: 'short-term', floor: 4 },
-  // Renta fija
-  { code: 'BaW ALM809P-D203', name: 'D203', category: 'long-term', floor: 2 },
-  { code: 'BaW ALM809P-D204', name: 'D204', category: 'long-term', floor: 2 },
-  { code: 'BaW ALM809P-D301', name: 'D301', category: 'long-term', floor: 3 },
-  { code: 'BaW ALM809P-D302', name: 'D302', category: 'long-term', floor: 3 },
-  { code: 'BaW ALM809P-D303', name: 'D303', category: 'long-term', floor: 3 },
-  { code: 'BaW ALM809P-D401', name: 'D401', category: 'long-term', floor: 4 },
-  { code: 'BaW ALM809P-D402', name: 'D402', category: 'long-term', floor: 4 },
-  { code: 'BaW ALM809P-D404', name: 'D404', category: 'long-term', floor: 4 }
-];
-
-async function seed() {
+const seedData = async () => {
   try {
-    await mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-    console.log('Conectado a MongoDB');
-
+    // Limpiar base de datos
     await User.deleteMany({});
     await Unit.deleteMany({});
+    await Template.deleteMany({});
 
-    await User.insertMany(users);
-    await Unit.insertMany(units);
+    console.log('🧹 Base de datos limpia');
 
-    console.log('Usuarios y unidades insertados correctamente.');
-    process.exit(0);
+    // 1. Crear Template Básico
+    const createdTemplate = await Template.create({
+      name: 'Limpieza Estándar',
+      description: 'Checklist general para salidas de huéspedes',
+      areas: [
+        {
+          name: 'Cocina',
+          items: [
+            { text: 'Refrigerador limpio y vacío', type: 'boolean' },
+            { text: 'Trastes lavados y guardados', type: 'boolean' },
+            { text: 'Bote de basura vacío', type: 'boolean' }
+          ]
+        },
+        {
+          name: 'Baño',
+          items: [
+            { text: 'Inodoro limpio', type: 'boolean' },
+            { text: 'Espejo sin manchas', type: 'boolean' },
+            { text: 'Toallas limpias puestas', type: 'boolean' }
+          ]
+        },
+        {
+          name: 'Habitación',
+          items: [
+            { text: 'Cama tendida sin arrugas', type: 'boolean' },
+            { text: 'No hay objetos olvidados', type: 'boolean' }
+          ]
+        }
+      ]
+    });
+
+    console.log('📝 Template creado');
+
+    // 2. Crear Usuarios
+    await User.create([
+      { name: 'Operador1', pin: '1234', role: 'operator' },
+      { name: 'Admin', pin: '0000', role: 'admin' }
+    ]);
+
+    console.log('👥 Usuarios creados');
+
+    // 3. Crear Unidades
+    await Unit.create([
+      { code: '101', name: 'Apartamento Playa', floor: 1, category: 'short-term' },
+      { code: 'PH1', name: 'Penthouse Vista', floor: 10, category: 'short-term' },
+      { code: '205', name: 'Estudio Centro', floor: 2, category: 'long-term' }
+    ]);
+
+    console.log('🏢 Unidades creadas');
+    console.log('✨ Seed completado con éxito');
+    process.exit();
+
   } catch (error) {
-    console.error('Error al insertar datos:', error);
+    console.error('❌ Error en seed:', error);
     process.exit(1);
   }
-}
+};
 
-seed(); 
+seedData();

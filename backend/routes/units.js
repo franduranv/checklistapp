@@ -7,9 +7,9 @@ const router = express.Router();
 router.get('/', verifyToken, async (req, res) => {
   try {
     const units = await Unit.find({ active: true })
-      .select('code name category floor')
+      .populate('defaultTemplate', 'name')
       .sort('code');
-    
+
     res.json({
       success: true,
       data: units
@@ -27,7 +27,7 @@ router.get('/', verifyToken, async (req, res) => {
 router.get('/category/:category', verifyToken, async (req, res) => {
   try {
     const { category } = req.params;
-    
+
     if (!['short-term', 'long-term'].includes(category)) {
       return res.status(400).json({
         success: false,
@@ -35,13 +35,13 @@ router.get('/category/:category', verifyToken, async (req, res) => {
       });
     }
 
-    const units = await Unit.find({ 
-      category: category, 
-      active: true 
+    const units = await Unit.find({
+      category: category,
+      active: true
     })
       .select('code name category floor')
       .sort('code');
-    
+
     res.json({
       success: true,
       data: units
@@ -55,4 +55,39 @@ router.get('/category/:category', verifyToken, async (req, res) => {
   }
 });
 
-module.exports = router; 
+// POST /api/units - Crear unidad
+router.post('/', verifyToken, async (req, res) => {
+  try {
+    // Solo admin puede crear (si tuvieras roles, verificar aquí req.user.role)
+    const newUnit = new Unit(req.body);
+    await newUnit.save();
+    res.status(201).json({
+      success: true,
+      data: newUnit
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// DELETE /api/units/:id - Eliminar (soft delete)
+router.delete('/:id', verifyToken, async (req, res) => {
+  try {
+    const unit = await Unit.findByIdAndUpdate(
+      req.params.id,
+      { active: false },
+      { new: true }
+    );
+    if (!unit) {
+      return res.status(404).json({ success: false, message: 'Unidad no encontrada' });
+    }
+    res.json({ success: true, message: 'Unidad eliminada' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+module.exports = router;

@@ -25,6 +25,10 @@ const unitSchema = new mongoose.Schema({
   active: {
     type: Boolean,
     default: true
+  },
+  defaultTemplate: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Template'
   }
 }, {
   timestamps: true
